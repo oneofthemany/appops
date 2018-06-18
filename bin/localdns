@@ -1,0 +1,103 @@
+#!/bin/bash
+
+BINDIR=$(dirname $(realpath ${BASH_SOURCE[0]}))
+
+source ${BINDIR}/.helpers       # helpful script functions
+source ${BINDIR}/../etc/conf.sh # user configuration
+
+PIDFILE=${RUNDIR}/localdns.pid
+LOGFILE=${LOGDIR}/localdns.log
+
+# clean the pidfile if it exists and is empty or if it exists but the referenced
+# pid within it does not. we want this file gone before running andy other commands
+# if it's invalid
+function clean_pidfile() {
+  if [[ -s ${PIDFILE} ]]; then
+    local pid=$(cat ${PIDFILE})
+    pid_exists ${pid} || {
+      log "# pid:${pid} not running ... removing ${PIDFILE}"
+      rm ${PIDFILE}
+    }
+  elif [[ -e ${PIDFILE} ]]; then
+    log "# removing empty ${PIDFILE}"
+    rm ${PIDFILE}
+  fi
+}
+
+## commands
+
+function start() {
+  test -e ${PIDFILE} && die "! localdns already running - ${PIDFILE}"
+
+  local cmd="node ${BINDIR}/../lib/cmd/localdns.js --port ${LOCALDNS_PORT} --ip ${LOCALDNS_STATICIP}"
+
+  if [[ ${LOCALDNS_PORT} -lt 1024 ]]; then
+    cmd="sudo ${cmd}"
+  fi
+
+  if [[ -f ${LOGFILE} ]]; then
+    # TODO real log rotation based on file size
+    log "# rotating log file ..."
+    cp ${LOGFILE} ${LOGFILE}.$(date +%s)
+    cat /dev/null > ${LOGFILE}
+  fi
+
+  log "# starting localdns service ..."
+  ${cmd} 2>&1 1>>${LOGFILE} &
+  echo -n $! >${PIDFILE}
+  log "# started"
+}
+
+function stop() {
+  test -e ${PIDFILE} || die "! localdns not running"
+  log "# stopping localdns service ..."
+  local pid=$(cat ${PIDFILE})
+  kill ${pid}
+  sleep 1
+  pid_exists ${pid} && die "! could not kill ${pid}"
+  log "# stopped"
+  rm ${PIDFILE}
+}
+
+## usage
+
+function usage () {
+  read -r -d '' HELP <<EOHELP
+Usage: ${0} [OPTIONS] COMMAND
+
+Options:
+  -h, --help\tThis help message
+
+Commands:
+  start\t\tStart this service
+  stop \t\tStop this service
+EOHELP
+  die "${1}\n${HELP}"
+}
+
+## main
+
+function main() {
+  eval set -- `getopt -o h --long help -n "${0}" -- "$@"`
+
+  while [ ! -z "${1}" ]; do
+    case "${1}" in
+      -h|--help) usage;;
+      --) shift; break;;
+      *) usage;;
+    esac
+
+    shift
+  done
+
+  clean_pidfile
+  case "${1}" in
+    start)
+      start;;
+    stop)
+      stop;;
+    *) usage "! Unknown command '${1}'\n";;
+  esac
+}
+
+main ${@}

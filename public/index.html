@@ -1,0 +1,65 @@
+<html>
+
+<head>
+  <link rel="manifest" href="/manifest.json">
+
+  <title>marigram</title>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: #000;
+    }
+
+    /* @see https://stackoverflow.com/a/36950349/912583 */
+    .video-container {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .video-container video {
+      /* Make video to at least 100% wide and tall */
+      min-width: 100%;
+      min-height: 100%;
+
+      /* Setting width & height to auto prevents the browser from stretching or squishing the video */
+      width: auto;
+      height: auto;
+
+      /* Center the video */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+    }
+  </style>
+</head>
+
+<body>
+	<script src="wsmgr.js"></script>
+
+  <div class="video-container">
+    <video id="player" loop muted autoplay src="/blank.webm"></video>
+  </div>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function (ev) {
+      let player = document.getElementById("player");
+      player.width=window.screen.width;
+
+      var wsm = new WebSocketManager("ws://" + window.location.host + "/ws/");
+      wsm.Start((msgstr) => {
+        let msg = JSON.parse(msgstr);
+        player.src = msg.data.url;
+        player.currentTime = msg.data.position / 1000;
+        player.play();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+BINDIR=$(dirname $(realpath ${BASH_SOURCE[0]}))
+
+source ${BINDIR}/../etc/conf.sh
+
+CMD="node ${BINDIR}/../lib/cmd/control.js --port ${WEBSOCKET_PORT} --conf ${CONTROL_CONF_FILE}"
+
+${CMD} ${@}

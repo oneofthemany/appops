@@ -1,0 +1,8 @@
+# services
+
+media/
+
+# misc
+var/
+node_modules/
+

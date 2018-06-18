@@ -1,0 +1,29 @@
+[
+  {
+    "title": "BLANK SCREEN",
+    "urls": ["/blank.webm"],
+    "position": 0,
+    "autoPlay": false
+  }, {
+    "title": "Big Buck Bunny",
+    "urls": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"],
+    "position": 0,
+    "autoPlay": true
+  }, {
+    "title": "Chromecast Ads",
+    "urls": [
+      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4"
+    ],
+    "position": 0,
+    "autoPlay": true
+  }, {
+    "title": "Tears of Steel",
+    "urls": ["http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"],
+    "position": 15000,
+    "autoPlay": true
+  }
+]

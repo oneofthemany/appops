@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function log () {
+  >&2 echo -e "${@}"
+}
+
+function die () {
+  log "${@}"
+  exit 1
+}
+
+function is_bin () {
+  local name=${1-NULL}
+  local cmd=${2-${1}}
+  type -p ${cmd} >/dev/null && log "# found ${name}=$(type -P ${cmd})" || {
+    echo "! ${name} is not installed"
+    return 1
+  }
+}
+
+function pid_exists() {
+  kill -0 ${1} 2>/dev/null
+  return $?
+}
