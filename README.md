@@ -24,6 +24,12 @@ This system is known to work with fairly recent Android devices -- at least Andr
 
 No work was put into ensuring that playback across devices remained "perfectly" in-sync. Due to various reasons: device specifications, network latency, etc. playback position can (and probably will) variate between devices. For the *Marigram* performance, this was actually a feature.
 
+## Installation
+
+At the moment, AppOps is not a bundled or packaged resource. If you intend to use github to version control your configuration changes, your best is to fork this repo to your local account and clone your fork.
+
+If you're not interested in version control or you just don't fell like forking, you can [download a tarball](https://github.com/strangeluggage/appops/tarball/master) or [a zipfile](https://github.com/strangeluggage/appops/tarball/master) of this repo and unpack it locally.
+
 ## Setup & Usage
 
 In all cases, you will need to have the latest version of direnv. So do that. Install it. Once direnv is installed, run the following from the root of this cloned repo:
@@ -119,7 +125,14 @@ $ localdns stop
 
 ## TODO
 
-1. Allow late-starting clients to start at a position in the video close to the current position of other videos. Thinking the best way might be to listen to heartbeat status updates from multigram in Control. Control can then manage the average playback position and send that up with any newly connecting clients.
+1. Convert the Control Server to a web-app itself. Meaning, control devices and playback from a web-app instead of a terminal window. This would allow for a better admin experience; including:
+
+* forwarding and rewinding playback position across all devices
+* adjusting volume
+* adding videos on the fly
+* etc
+
+2. Allow late-starting clients to start at a position in the video close to the current position of other videos. Thinking the best way might be to listen to heartbeat status updates from multigram in Control. Control can then manage the average playback position and send that up with any newly connecting clients.
 
 - tracking per-client position of playback
 - position newly attached clients to average playback position of already attached clients
@@ -127,4 +140,6 @@ $ localdns stop
 - deal with video loopings
 - possibly ignore position for open clients that haven't been updated recently
 
-2. Allow auto-switching based on a timer.
+3. Best-effort at keeping video playback position in sync across all clients.
+
+4. [Maybe] Allow auto-switching based on a timer.

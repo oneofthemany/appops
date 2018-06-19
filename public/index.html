@@ -1,5 +1,4 @@
 <html>
-
 <head>
   <link rel="manifest" href="/manifest.json">
 
@@ -46,11 +45,10 @@
     <video id="player" loop muted autoplay src="/blank.webm"></video>
   </div>
 
-
   <script>
     document.addEventListener("DOMContentLoaded", function (ev) {
       let player = document.getElementById("player");
-      player.width=window.screen.width;
+      player.width = window.screen.width;
 
       var wsm = new WebSocketManager("ws://" + window.location.host + "/ws/");
       wsm.Start((msgstr) => {
