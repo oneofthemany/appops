@@ -11,7 +11,7 @@
     }
 
     /* @see https://stackoverflow.com/a/36950349/912583 */
-    .video-container {
+    .container {
       position: absolute;
       top: 0;
       bottom: 0;
@@ -20,7 +20,7 @@
       overflow: hidden;
     }
 
-    .video-container video {
+    .container video {
       /* Make video to at least 100% wide and tall */
       min-width: 100%;
       min-height: 100%;
@@ -35,27 +35,54 @@
       left: 50%;
       transform: translate(-50%,-50%);
     }
+
+    .container img {
+/*      max-width: 100%;
+      max-height: 100vh;
+      margin: auto;
+*/      object-fit: cover;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+    }
   </style>
 </head>
 
 <body>
 	<script src="wsmgr.js"></script>
 
-  <div class="video-container">
+  <div class="container">
+    <img id="viewer" style="display:none"/>
     <video id="player" loop muted autoplay src="/blank.webm"></video>
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function (ev) {
       let player = document.getElementById("player");
+      let viewer = document.getElementById("viewer");
       player.width = window.screen.width;
 
       var wsm = new WebSocketManager("ws://" + window.location.host + "/ws/");
       wsm.Start((msgstr) => {
         let msg = JSON.parse(msgstr);
-        player.src = msg.data.url;
-        player.currentTime = msg.data.position / 1000;
-        player.play();
+        if (msg.data.type == "video") {
+          player.src = msg.data.url;
+          player.currentTime = msg.data.positionMs / 1000;
+          player.play();
+
+          viewer.style.display = "none";
+          player.style.display = "";
+        } else if (msg.data.type == "image") {
+          viewer.src = msg.data.url;
+
+          viewer.style.display = "";
+          player.style.display = "none";
+
+          player.pause();
+        } else {
+          console.log("unrecognized media object: ", msg)
+        }
       });
     });
   </script>

@@ -1,4 +1,4 @@
-const { Video, Server } = require("../../lib/video");
+const { Video, Server } = require("../../lib/media");
 const WebSocket = require("ws");
 
 Number.prototype.times = function(x) {
@@ -7,9 +7,8 @@ Number.prototype.times = function(x) {
 }
 
 describe("Server", () => {
-  let v1 = new Video.Builder("t1").withURL("/u1-0").withPositionMs(10).build();
-  let v2 = new Video.Builder("t2").withURL("/u2-0").withURL("/u2-1").withAutoPlay(false).build();
-  let v3 = new Video.Builder("t3").withURL("/u3-0").withURL("/u3-1").withURL("/u3-2").build();
+  let v1 = new Video.Builder("t1 video").withURL("/u1-0/video").withPositionMs(10).build();
+  let v2 = new Video.Builder("t2 video").withURL("/u2-0/video").withURL("/u2-1/video").withAutoPlay(false).build();
 
   it("accepts a websocket client", (done) => {
     let srv = new Server(0);
@@ -85,22 +84,24 @@ describe("Server", () => {
     }, 50)
   }, 1000)
 
-  it("picks only URL from Video on send", (done) => {
+  it("picks only URL from data on send", (done) => {
     let srv = new Server(0);
     let msgs = [];
 
     new WebSocket(`ws://${srv.address().address}:${srv.address().port}`).
       on("message", msgs.push.bind(msgs));
 
-    setTimeout(() => srv.broadcast("change", v1), 20)
+    setTimeout(() => srv.broadcast("change", v1.toJSON()), 20)
     setTimeout(() => {
       srv.close();
       let expected = JSON.stringify({
         event: "change",
         data: {
-          url: "/u1-0",
-          position: 10,
-          autoPlay: true
+          type: "video",
+          title: "t1 video",
+          positionMs: 10,
+          autoPlay: true,
+          url: "/u1-0/video"
         }
       });
       expect(msgs).toEqual([expected]);
@@ -108,31 +109,35 @@ describe("Server", () => {
     }, 50)
   }, 1000)
 
-  it("picks different URL from Video for each client", (done) => {
+  it("picks different URL from data for each client", (done) => {
     let srv = new Server(0);
     let msgs = [];
 
     (2).times(() => new WebSocket(`ws://${srv.address().address}:${srv.address().port}`)).
       map(client => client.on("message", msgs.push.bind(msgs)));
 
-    setTimeout(() => srv.broadcast("change", v2), 20)
+    setTimeout(() => srv.broadcast("change", v2.toJSON()), 20)
     setTimeout(() => {
       srv.close();
       expect(msgs.length).toEqual(2);
       expect(msgs).toContain(JSON.stringify({
         event: "change",
         data: {
-          url: "/u2-0",
-          position: 0,
-          autoPlay: false
+          type: "video",
+          title: "t2 video",
+          positionMs: 0,
+          autoPlay: false,
+          url: "/u2-0/video"
         }
       }));
       expect(msgs).toContain(JSON.stringify({
         event: "change",
         data: {
-          url: "/u2-1",
-          position: 0,
-          autoPlay: false
+          type: "video",
+          title: "t2 video",
+          positionMs: 0,
+          autoPlay: false,
+          url: "/u2-1/video"
         }
       }));
       done();
@@ -146,11 +151,12 @@ describe("Server", () => {
     (3).times(() => new WebSocket(`ws://${srv.address().address}:${srv.address().port}`)).
       map(client => client.on("message", msgs.push.bind(msgs)));
 
-    setTimeout(() => srv.broadcast("change", v2), 20)
+    setTimeout(() => srv.broadcast("change", v2.toJSON()), 20)
     setTimeout(() => {
       srv.close();
       let actualUrls = msgs.map(msg => JSON.parse(msg).data.url)
-      expect(actualUrls.sort()).toEqual(["/u2-0", "/u2-0", "/u2-1"]);
+      expect(actualUrls.length).toBe(3);
+      expect(actualUrls.sort()).toEqual(["/u2-0/video", "/u2-0/video", "/u2-1/video"]);
       done();
     }, 50)
   }, 1000)

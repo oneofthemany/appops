@@ -28,7 +28,7 @@ No work was put into ensuring that playback across devices remained "perfectly" 
 
 At the moment, AppOps is not a bundled or packaged resource. If you intend to use github to version control your configuration changes, your best is to fork this repo to your local account and clone your fork.
 
-If you're not interested in version control or you just don't fell like forking, you can [download a tarball](https://github.com/strangeluggage/appops/tarball/master) or [a zipfile](https://github.com/strangeluggage/appops/tarball/master) of this repo and unpack it locally.
+If you're not interested in version control or you just don't fell like forking, you can [download a tarball](https://github.com/strangeluggage/appops/tarball/master) or [a .zip file](https://github.com/strangeluggage/appops/tarball/master) of this repo and unpack it locally.
 
 ## Setup & Usage
 
